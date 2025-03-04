@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - ParkeateYa RD</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- CSS Personal -->
+    <style>
+        :root {
+            --primary-color: #000bd3;
+            --secondary-color: #b42828;
+            --text-color: #333;
+            --bg-color: #f4f4f4;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 15px;
+        }
+
+        th, td {
+            padding: 15px;
+            background-color: #fff;
+            border: none;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: black;
+        }
+
+        tr {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-parking me-2"></i>
+                ParkeateYa RD Admin
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Ingreso y Salida</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <!-- Sección de Login -->
+        <section id="login" style="display: none;" data-aos="fade-up">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Iniciar Sesión</h2>
+                    <form onsubmit="login(event)">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Usuario</label>
+                            <input type="text" class="form-control" id="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de Administrador -->
+        <section id="admin" style="display: none;">
+            <h2 class="section-title" data-aos="fade-up">Panel del Administrador</h2>
+            <div class="row">
+                <!-- Administrar Tarifas -->
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Tarifas</h4>
+                            <form onsubmit="actualizarTarifas(event)">
+                                <div class="mb-3">
+                                    <label for="tarifaMotocicleta" class="form-label">Motocicleta (por hora)</label>
+                                    <input type="number" class="form-control" id="tarifaMotocicleta" placeholder="Monto" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tarifaCarro" class="form-label">Carro/Jeepeta (por hora)</label>
+                                    <input type="number" class="form-control" id="tarifaCarro" placeholder="Monto" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tarifaCamion" class="form-label">Camión (por hora)</label>
+                                    <input type="number" class="form-control" id="tarifaCamion" placeholder="Monto" required>
+                                </div>
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-dollar-sign me-2"></i>Actualizar Tarifas
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Administrar Capacidad y Ocupación -->
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Capacidad de Estacionamiento</h4>
+                            <form onsubmit="actualizarCapacidad(event)">
+                                <div class="mb-3">
+                                    <label for="capacidadMotocicleta" class="form-label">Motocicletas</label>
+                                    <input type="number" class="form-control" id="capacidadMotocicleta" value="10" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="capacidadCarro" class="form-label">Carros/Jeepetas</label>
+                                    <input type="number" class="form-control" id="capacidadCarro" value="15" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="capacidadCamion" class="form-label">Camiones</label>
+                                    <input type="number" class="form-control" id="capacidadCamion" value="5" required>
+                                </div>
+                                <button type="submit" class="btn btn-info">
+                                    <i class="fas fa-parking me-2"></i>Actualizar Capacidad
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consultar Estacionamientos -->
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Estacionamientos</h4>
+                            <!-- Botones para consultar -->
+                            <button class="btn btn-primary btn-block mb-2" onclick="consultarDisponiblesOcupados()">Consultar Disponibles y Ocupados</button>
+
+                            <!-- Mostrar los resultados -->
+                            <div>
+                                <p><strong>Espacios Ocupados:</strong> <span id="ocupadosInfo">0/0</span></p>
+                                <p><strong>Espacios Disponibles:</strong> <span id="disponiblesInfo">0/0</span></p>
+                            </div>
+
+                            <button class="btn btn-primary btn-block mb-2" onclick="consultarPorVehiculo()">
+                                <i class="fas fa-car me-2"></i>Consultar por Vehículo
+                            </button>
+                            <div id="porVehiculoInfo" class="alert alert-info mt-2" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Tickets Activos -->
+            <div class="mt-5" data-aos="fade-up">
+                <h4 class="section-title">Tickets Activos</h4>
+                <div class="table-responsive">
+                    <table id="tablaTickets" class="table">
+                        <thead>
+                            <tr>
+                                <th>Código de Ticket</th>
+                                <th>Tipo de Vehículo</th>
+                                <th>Fecha de Ingreso</th>
+                                <th>Tiempo Transcurrido</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+
+    <!-- JAVASCRIPT -->
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
+
+        let tarifas = {
+            "Motocicleta": 10,
+            "Carro/Jeepeta": 15,
+            "Camión": 20
+        };
+
+        let capacidad = {
+            "Motocicleta": 10,
+            "Carro/Jeepeta": 15,
+            "Camión": 5
+        };
+
+        let estacionamientos = [];
+
+        function inicializarEstacionamientos() {
+            estacionamientos = [];
+            for (let tipo in capacidad) {
+                for (let i = 1; i <= capacidad[tipo]; i++) {
+                    estacionamientos.push({
+                        id: `${tipo}-${i}`,
+                        tipoVehiculo: tipo,
+                        ocupado: false,
+                        codigoTicket: null,
+                        horaIngreso: null
+                    });
+                }
+            }
+        }
+
+        inicializarEstacionamientos();
+
+        function login(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const data = {
+                nombreUsuario: username,
+                contrasena: password
+            };
+
+            fetch('https://localhost:7205/api/admin/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Usuario o contraseña incorrectos.');
+                }
+                return response.json();
+            })
+            .then(admin => {
+                
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('admin').style.display = 'block';
+
+                obtenerTarifas();
+                obtenerEstacionamientos();
+                actualizarTablaTickets();
+                
+                
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Usuario o contraseña incorrectos.');
+            });
+        }
+
+        function logout() {
+            document.getElementById('login').style.display = 'block';
+            document.getElementById('admin').style.display = 'none';
+        }
+
+        window.onload = function() {
+            document.getElementById('login').style.display = 'block';
+        }
+
+        function actualizarTablaTickets() {
+            fetch('https://localhost:7205/api/vehicles/active-tickets', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                    
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener los tickets activos.');
+                }
+                return response.json();
+            })
+            .then(ticketsActivos => {
+                const tablaBody = document.getElementById('tablaTickets').querySelector('tbody');
+                tablaBody.innerHTML = '';
+
+                ticketsActivos.forEach(ticket => {
+                    const fila = document.createElement('tr');
+                    const tiempoTranscurrido = calcularTiempoTranscurrido(ticket.horaIngreso);
+
+                    fila.innerHTML = `
+                        <td>${ticket.codigo}</td>
+                        <td>${ticket.tipoVehiculo}</td>
+                        <td>${new Date(ticket.horaIngreso).toLocaleString()}</td>
+                        <td>${tiempoTranscurrido}</td>
+                    `;
+                    tablaBody.appendChild(fila);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un error al obtener los tickets activos.');
+            });
+        }
+
+        function calcularTiempoTranscurrido(horaIngreso) {
+            const ahora = new Date();
+            const ingreso = new Date(horaIngreso);
+            const minutos = Math.floor((ahora - ingreso) / 60000); 
+            return minutos > 0 ? `${minutos} minutos` : 'Menos de 1 minuto';
+        }
+
+        function consultarDisponiblesOcupados() {
+            fetch('https://localhost:7205/api/admin/spaces', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                    
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener los datos de los estacionamientos.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                
+                let totalCapacidad = 0;
+                let totalOcupados = 0;
+                let totalDisponibles = 0;
+
+                data.forEach(estacionamiento => {
+                    totalCapacidad += estacionamiento.capacidadTotal;
+                    totalOcupados += estacionamiento.ocupados;
+                    totalDisponibles += estacionamiento.disponibles;
+                });
+
+                
+                document.getElementById('ocupadosInfo').innerText = `${totalOcupados}/${totalCapacidad}`;
+                document.getElementById('disponiblesInfo').innerText = `${totalDisponibles}/${totalCapacidad}`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un error al obtener los datos de los estacionamientos.');
+            });
+        }
+
+        function mostrarDisponibles() {
+            fetch('https://localhost:7205/api/admin/spaces', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                    
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener los espacios disponibles.');
+                }
+                return response.json();
+            })
+            .then(espacios => {
+                const disponibles = espacios.filter(e => !e.ocupado).length;
+                const total = espacios.length;
+                const disponiblesInfo = document.getElementById('disponiblesInfo');
+                disponiblesInfo.innerText = `Estacionamientos disponibles: ${disponibles}/${total}`;
+                disponiblesInfo.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un error al obtener los espacios disponibles.');
+            });
+        }
+
+        function mostrarOcupados() {
+            fetch('https://localhost:7205/api/admin/spaces', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                    
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener los espacios ocupados.');
+                }
+                return response.json();
+            })
+            .then(espacios => {
+                const ocupados = espacios.filter(e => e.ocupado).length;
+                const total = espacios.length;
+                const ocupadosInfo = document.getElementById('ocupadosInfo');
+                ocupadosInfo.innerText = `Estacionamientos ocupados: ${ocupados}/${total}`;
+                ocupadosInfo.style.display = 'block';
+
+                
+                actualizarTablaTickets();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un error al obtener los espacios ocupados.');
+            });
+        }
+
+        
+        function consultarPorVehiculo() {
+            fetch('https://localhost:7205/api/admin/spaces', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                    
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener los datos de los estacionamientos.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                
+                let contenido = '<h4>Estado por Vehículo</h4>';
+                contenido += '<table class="table">';
+                contenido += '<thead><tr><th>Tipo de Vehículo</th><th>Ocupados</th><th>Disponibles</th><th>Capacidad Total</th></tr></thead>';
+                contenido += '<tbody>';
+
+                data.forEach(estacionamiento => {
+                    contenido += `
+                        <tr>
+                            <td>${estacionamiento.tipoVehiculo}</td>
+                            <td>${estacionamiento.ocupados}</td>
+                            <td>${estacionamiento.disponibles}</td>
+                            <td>${estacionamiento.capacidadTotal}</td>
+                        </tr>
+                    `;
+                });
+
+                contenido += '</tbody></table>';
+
+                
+                const porVehiculoInfo = document.getElementById('porVehiculoInfo');
+                porVehiculoInfo.innerHTML = contenido;
+                porVehiculoInfo.style.display = 'block'; 
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un error al obtener los datos de los estacionamientos.');
+            });
+        }
+
+        let tarifasActuales = [];
+
+        function obtenerTarifas() {
+            fetch('https://localhost:7205/api/pricing', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener las tarifas.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                tarifasActuales = data;
+
+                
+                data.forEach(tarifa => {
+                    console.log('Tipo de vehículo:', tarifa.tipoVehiculo);
+                    switch (tarifa.tipoVehiculo.toLowerCase()) {
+                        case 'motocicleta':
+                            document.getElementById('tarifaMotocicleta').value = tarifa.tarifaPorHora;
+                            break;
+                        case 'carrojeepeta':
+                        case 'carro/jeepeta':
+                            document.getElementById('tarifaCarro').value = tarifa.tarifaPorHora;
+                            break;
+                        case 'camión':
+                        case 'camion':
+                            document.getElementById('tarifaCamion').value = tarifa.tarifaPorHora;
+                            break;
+                        default:
+                            console.log('Tipo de vehículo desconocido:', tarifa.tipoVehiculo);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un error al obtener las tarifas actuales.');
+            });
+        }
+
+        function actualizarTarifas(event) {
+            event.preventDefault();
+
+            if (tarifasActuales.length === 0) {
+                alert('No se han podido obtener las tarifas actuales. Intenta nuevamente.');
+                return;
+            }
+
+            const nuevaTarifaMotocicleta = parseFloat(document.getElementById('tarifaMotocicleta').value);
+            const nuevaTarifaCarro = parseFloat(document.getElementById('tarifaCarro').value);
+            const nuevaTarifaCamion = parseFloat(document.getElementById('tarifaCamion').value);
+
+            if (isNaN(nuevaTarifaMotocicleta) || isNaN(nuevaTarifaCarro) || isNaN(nuevaTarifaCamion)) {
+                alert('Por favor, ingresa valores numéricos válidos para las tarifas.');
+                return;
+            }
+
+            const promesasActualizacion = tarifasActuales.map(tarifa => {
+                let nuevaTarifaPorHora;
+
+                
+                console.log('Actualizando tarifa para tipoVehiculo:', tarifa.tipoVehiculo);
+
+                switch (tarifa.tipoVehiculo.toLowerCase()) {
+                    case 'motocicleta':
+                        nuevaTarifaPorHora = nuevaTarifaMotocicleta;
+                        break;
+                    case 'carro/jeepeta':
+                    case 'carro':
+                    case 'jeepeta':
+                    case 'carrojeepeta':
+                    case 'carro jeepeta':
+                    case 'carro-jeepeta':
+                        nuevaTarifaPorHora = nuevaTarifaCarro;
+                        break;
+                    case 'camión':
+                    case 'camion':
+                        nuevaTarifaPorHora = nuevaTarifaCamion;
+                        break;
+                    default:
+                        console.log('Tipo de vehículo no reconocido:', tarifa.tipoVehiculo);
+                        return Promise.resolve();
+                }
+
+                const tarifaActualizada = {
+                    idTarifa: tarifa.idTarifa,
+                    tipoVehiculo: tarifa.tipoVehiculo,
+                    tarifaPorHora: nuevaTarifaPorHora,
+                    tiempoCortesia: tarifa.tiempoCortesia
+                };
+
+                return fetch('https://localhost:7205/api/pricing', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(tarifaActualizada)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(error => {
+                            throw new Error(error.message || 'Error al actualizar la tarifa.');
+                        });
+                    }
+                    return response.json();
+                });
+            });
+
+            Promise.all(promesasActualizacion)
+                .then(results => {
+                    alert('Tarifas actualizadas correctamente.');
+                    obtenerTarifas();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(`Hubo un error al actualizar las tarifas: ${error.message}`);
+                });
+        }
+
+        let estacionamientosActuales = [];
+
+        function obtenerEstacionamientos() {
+            fetch('https://localhost:7205/api/admin/spaces', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                    
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener los estacionamientos.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                estacionamientosActuales = data;
+
+                
+                data.forEach(estacionamiento => {
+                    switch (estacionamiento.tipoVehiculo.toLowerCase()) {
+                        case 'motocicleta':
+                            document.getElementById('capacidadMotocicleta').value = estacionamiento.capacidadTotal;
+                            break;
+                        case 'carro/jeepeta':
+                        case 'carro':
+                        case 'jeepeta':
+                        case 'carrojeepeta':
+                        case 'carro jeepeta':
+                        case 'carro-jeepeta':
+                            document.getElementById('capacidadCarro').value = estacionamiento.capacidadTotal;
+                            break;
+                        case 'camión':
+                        case 'camion':
+                            document.getElementById('capacidadCamion').value = estacionamiento.capacidadTotal;
+                            break;
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un error al obtener los estacionamientos actuales.');
+            });
+        }
+
+        function actualizarCapacidad(event) {
+            event.preventDefault();
+
+            if (estacionamientosActuales.length === 0) {
+                alert('No se han podido obtener los estacionamientos actuales. Intenta nuevamente.');
+                return;
+            }
+
+            const nuevaCapacidadMotocicleta = parseInt(document.getElementById('capacidadMotocicleta').value);
+            const nuevaCapacidadCarro = parseInt(document.getElementById('capacidadCarro').value);
+            const nuevaCapacidadCamion = parseInt(document.getElementById('capacidadCamion').value);
+
+            if (isNaN(nuevaCapacidadMotocicleta) || isNaN(nuevaCapacidadCarro) || isNaN(nuevaCapacidadCamion)) {
+                alert('Por favor, ingresa valores numéricos válidos para las capacidades.');
+                return;
+            }
+
+            const promesasActualizacion = estacionamientosActuales.map(estacionamiento => {
+                let nuevaCapacidadTotal;
+
+                switch (estacionamiento.tipoVehiculo.toLowerCase()) {
+                    case 'motocicleta':
+                        nuevaCapacidadTotal = nuevaCapacidadMotocicleta;
+                        break;
+                    case 'carro/jeepeta':
+                    case 'carro':
+                    case 'jeepeta':
+                    case 'carrojeepeta':
+                    case 'carro jeepeta':
+                    case 'carro-jeepeta':
+                        nuevaCapacidadTotal = nuevaCapacidadCarro;
+                        break;
+                    case 'camión':
+                    case 'camion':
+                        nuevaCapacidadTotal = nuevaCapacidadCamion;
+                        break;
+                    default:
+                        console.log('Tipo de vehículo no reconocido:', estacionamiento.tipoVehiculo);
+                        return Promise.resolve();
+                }
+
+                const estacionamientoActualizado = {
+                    idEstacionamiento: estacionamiento.idEstacionamiento,
+                    tipoVehiculo: estacionamiento.tipoVehiculo,
+                    capacidadTotal: nuevaCapacidadTotal
+                    
+                };
+
+                return fetch('https://localhost:7205/api/admin/spaces/update', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(estacionamientoActualizado)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(error => {
+                            throw new Error(error.message || 'Error al actualizar el estacionamiento.');
+                        });
+                    }
+                    return response.json();
+                });
+            });
+
+            Promise.all(promesasActualizacion)
+                .then(results => {
+                    alert('Capacidades actualizadas correctamente.');
+                    obtenerEstacionamientos();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(`Hubo un error al actualizar las capacidades: ${error.message}`);
+                });
+        }
+    </script>
+</body>
+</html>
